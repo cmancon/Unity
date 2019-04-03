@@ -201,11 +201,16 @@ class UnityModuleGenerator
         puts "File #{file[:path]} already exists!"
         next
       end
+      # Load boilerplate file content or template
+      unless file[:boilerplate].nil?
+        content = File.read(file[:boilerplate])
+      else
+        content = file[:template]
+      end
       # Create the path first if necessary.
       FileUtils.mkdir_p(File.dirname(file[:path]), verbose: false)
       File.open(file[:path], 'w') do |f|
-        f.write("#{file[:boilerplate]}\n" % [file[:name]]) unless file[:boilerplate].nil?
-        f.write(file[:template] % [file[:name],
+        f.write(content % [file[:name],
                                    file[:includes].map { |ff| "#include \"#{ff}\"\n" }.join,
                                    file[:name].upcase])
       end
